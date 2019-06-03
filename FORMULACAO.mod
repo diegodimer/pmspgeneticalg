@@ -1,6 +1,4 @@
-#novaversao
-# 
-# 
+
 
 set K; #conjunto de máquinas K = 1...m
 
@@ -40,29 +38,4 @@ s.t. r7 : c[0] = 0;
 
 # Fim do bloco de modelo.
 
-data;
-
-set I := 0 1 2;
-set J := 1 2;
-set K := 1;
-param V := 9999;
-
-
-param G :=	1 2 1 20,
-			2 1 1 70,
-			0 1 1 10,
-			0 2 1 20,
-			1 1 1 0,
-			2 2 1 0,
-			1 0 1 0,
-			2 0 1 0;
-			
-			
-#outro jeito de escrever os parametros:
-#param G :=
-#
-#	[*,*,1]:0  1  2 :=
-#		0	0  10 20
-#		1	0  0  20
-#		2	0  70 0;
 end;

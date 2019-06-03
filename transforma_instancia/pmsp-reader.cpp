@@ -129,8 +129,9 @@ void PmspInstance::writeFormatGLPK(const char* fname) const
         std::cout << "Output file could not be open to write.\n";
         std::abort();
     }
+	fid << "data;"<<"\n";
     // Monta set I;
-    fid << "set I :=";
+    fid << "set J :=";
     for (int i=1; i<=m_numJobs; i++)
     {
         fid << " " << i ;
@@ -138,7 +139,7 @@ void PmspInstance::writeFormatGLPK(const char* fname) const
     fid << ";" << "\n";
 
     // Monta set J;
-    fid << "set J :=";
+    fid << "set I :=";
     for (int i=0; i<=m_numJobs; i++)
     {
         fid << " " << i ;
@@ -153,27 +154,33 @@ void PmspInstance::writeFormatGLPK(const char* fname) const
     }
     fid << ";" << "\n";
 
-    fid <<"param V := 999999999;" << "\n";
+    fid <<"param V := 9999;" << "\n";
 
     fid << "\n";
-    fid << "param G :=\n";
+    fid << "param G :=";
     // param G {i in I, j in J, k in K};
 
 
-    for(int i=0; i < m_numJobs; i++)
+    for(int i=-1; i < m_numJobs; i++)
     {
         for(int j=-1; j<m_numJobs; j++)
         {
             for(int k=0; k<m_numMachines; k++)
             {
-                if(j==-1){
-                    fid <<"\t" << i+1 << " " << j+1 << " " << k+1 << " " << getProcTime(i,k) << "\n";
+				if(j==-1 && i==-1){
+				}
+				else if(i==-1){
+					fid <<"\n\t" << i+1 << " " << j+1 << " " << k+1 << " " << getProcTime(j,k);
+				}
+                else if(j==-1){
+                    fid <<"\n\t" << i+1 << " " << j+1 << " " << k+1 << " " << getProcTime(i,k);
                 }else
-                    fid <<"\t" << i+1 << " " << j+1 << " " << k+1 << " " << getGijk(i,j,k) << "\n";
+                    fid <<"\n\t" << i+1 << " " << j+1 << " " << k+1 << " " << getGijk(i,j,k);
             }
         }
     }
-    fid << ";" << "\n";
+    fid << ";" << "\n\n";
+	fid <<"end;"<<"\n\n";
 
 }
 
