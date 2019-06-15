@@ -102,3 +102,8 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+*.aux
+*io.txt
+*.out
+*rio.synctex.gz
