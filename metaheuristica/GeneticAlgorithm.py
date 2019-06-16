@@ -1,9 +1,13 @@
 import random
 import math
 
+import Operators
+
+
 class GeneticAlgorithm:
     def __init__(self, numberOfWeights, seed = None):
       self.numberOfWeights = numberOfWeights
+      self.operators = Operators.Operators(numberOfWeights)
 
       # Number of solutions generated per operator
       self.previousBestsSize = 5
@@ -11,9 +15,11 @@ class GeneticAlgorithm:
       self.allPointsMutationSize = 5
       self.meanCrossOversize = 5
       self.mediumPointCrossOverSize = 5
+
       self.populationSize = self.previousBestsSize + self.onePointMutationSize + \
                             self.allPointsMutationSize + self.meanCrossOversize + \
                             self.mediumPointCrossOverSize
+
       self.population = []
       self.fitness = []
 
@@ -29,8 +35,6 @@ class GeneticAlgorithm:
       self.maxMutationScale = 1.0
 
       self.seed = seed
-
-
 
     # Generates a random population where each weight of each solution is in the interval [a,b]
     def randomizePopulation(self, a, b):
@@ -58,45 +62,6 @@ class GeneticAlgorithm:
         newFitness.append(0.0)
 
       return newPopulation, newFitness
-
-    #################################################### OPERATORS ####################################################
-
-    # Adds a value between (-1.0, 1.0) / self.scale to one weight
-    def onePointMutation(self, solution):
-      random.seed()
-      newSolution = []
-      for i in range(self.numberOfWeights):
-        newSolution.append(solution[i])
-      mutationSite = random.randrange(0, len(solution))
-      newSolution[mutationSite] += random.uniform(-1.0, 1.0) / self.mutationScale
-      return newSolution
-
-    # Adds a value between (-1.0, 1.0) / self.scale to each weight
-    def allPointsMutation(self, solution):
-      newSolution = []
-      for i in range(self.numberOfWeights):
-        newSolution.append(solution[i] + (random.uniform(-1.0, 1.0) / self.mutationScale))
-      return newSolution
-
-    # Returns the mean of the two solutions
-    def meanCrossOver(self, solution1, solution2):
-      newSolution = []
-      for i in range(len(solution1)):
-        newValue = (solution1[i] + solution2[i]) / 2.0
-        newSolution.append(newValue)
-      return newSolution
-
-    # newSolution takes the first half of the weights from solution1 and the other half from solution2
-    def mediumPointCrossOver(self, solution1, solution2):
-      newSolution = []
-      for i in range(len(solution1)):
-        if i < len(solution1) / 2:
-          newSolution.append(solution1[i])
-        else:
-          newSolution.append(solution2[i])
-      return newSolution
-
-    ###################################################################################################################
 
     # To determine which solutions have the best fitness
     # Implements selection sort
@@ -168,27 +133,27 @@ class GeneticAlgorithm:
         for i in range(self.onePointMutationSize):
           # onePointMutation()
           solution = random.choice(matingPool)
-          newPopulation[i + offset] = self.onePointMutation(solution)
+          newPopulation[i + offset] = self.operators.onePointMutation(solution, self.mutationScale)
 
         offset += self.onePointMutationSize
         for i in range(self.allPointsMutationSize):
           # allPointsMutation()
           solution = random.choice(matingPool)
-          newPopulation[i + offset] = self.allPointsMutation(solution)
+          newPopulation[i + offset] = self.operators.allPointsMutation(solution, self.mutationScale)
 
         offset += self.allPointsMutationSize
         for i in range(self.meanCrossOversize):
           # meanCrossOver()
           solution1 = random.choice(matingPool)
           solution2 = random.choice(matingPool)
-          newPopulation[i + offset] = self.meanCrossOver(solution1, solution2)
+          newPopulation[i + offset] = self.operators.meanCrossOver(solution1, solution2)
 
         offset += self.meanCrossOversize
         for i in range(self.mediumPointCrossOverSize):
           # mediumPointCrossOver()
           solution1 = random.choice(matingPool)
           solution2 = random.choice(matingPool)
-          newPopulation[i + offset] = self.mediumPointCrossOver(solution1, solution2)
+          newPopulation[i + offset] = self.operators.mediumPointCrossOver(solution1, solution2)
 
         for i in range(self.populationSize):
             #print("Evaluating " + str(newPopulation[i]))
@@ -197,9 +162,6 @@ class GeneticAlgorithm:
         newPopulation, newFitness = self.orderPopulationByFitness(newPopulation, newFitness)
 
         print(newFitness[0])
-        # print('New fitness:')
-        # for i in range(self.populationSize):
-        #     print(newFitness[i])
 
         self.population = newPopulation
         self.fitness = newFitness
