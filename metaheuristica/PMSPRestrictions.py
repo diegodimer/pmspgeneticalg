@@ -10,6 +10,18 @@ class PMSPRestrictions:
         self.n = n
         self.G = G.copy()
 
+    def evaluate(self,
+                 x : np.ndarray):
+        assert (x.shape == self.G.shape), "Wrong number of tasks/machines"
+
+        max_c = 0        
+        for i in range(self.m):
+            c = sum(sum(self.G[:,:,i] * x[:,:,i]))
+            max_c = max(max_c, c)
+            
+        return max_c
+            
+
     def check_validity(self,
                        order : list):
         """for l in order:

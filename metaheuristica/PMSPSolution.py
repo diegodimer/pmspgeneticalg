@@ -19,9 +19,6 @@ class PMSPSolution:
                    order : list):
         self.restrictions.check_validity(order)
         
-        print("Before:")
-        print(order)
-        
         for i in range(self.m):
             machine_order = order[i]
             machine_total_tasks = len(machine_order)
@@ -72,7 +69,6 @@ class PMSPSolution:
                 
                 # Next task was not found; no task for this machine
                 if next_task == -1:
-                    #print("Task not found")
                     break
 
                 if next_task != 0:
