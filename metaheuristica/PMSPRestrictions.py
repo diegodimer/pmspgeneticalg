@@ -1,7 +1,8 @@
 import math
+import random
 import numpy as np
 
-from PMSPInstance import PMSPInstance
+from PMSPSolution import PMSPSolution
 
 
 class PMSPRestrictions:
@@ -10,13 +11,14 @@ class PMSPRestrictions:
         self.G = G.copy()
 
     def is_valid(self,
-                 instance : PMSPInstance):
+                 instance : PMSPSolution):
         return True
 
 
 if __name__ == '__main__':
+    random.seed()
     restrictions = PMSPRestrictions(np.ndarray((1, 1)))
-    instance = PMSPInstance(2, 2)
+    instance = PMSPSolution.random_instance(5, 20)
     if restrictions.is_valid(instance):
         print('Valid instance!')
     else:
