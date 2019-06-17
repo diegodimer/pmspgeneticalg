@@ -10,12 +10,15 @@ if __name__ == '__main__':
     restrictions = PMSPRestrictions(5, 20, np.ndarray((21, 21, 5)))
     solution = PMSPSolution.random_instance(5, 20, restrictions)
     
-    """
-    if restrictions.check_validity(instance.to_order()):
+    print("After:")
+    print(solution.to_order())
+    
+    
+    if restrictions.check_validity(solution.to_order()):
         print('Valid instance!')
     else:
         print('Invalid instance!')
-    """
+    
     
     solution.x[0, 0, 1] = True
     print(solution.x[0, 0, 0] * 100)

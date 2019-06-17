@@ -20,7 +20,7 @@ class PMSPRestrictions:
         for machine_order in order:
             total_tasks += len(machine_order)
             
-        # print(self.x.shape)
+        # print(self.G.shape)
         # print((total_tasks + 1, total_tasks + 1, total_machines))
         
         assert (self.G.shape == (total_tasks + 1, total_tasks + 1, total_machines)), \
@@ -33,4 +33,5 @@ class PMSPRestrictions:
                 assert (tasks[t] == 0), "Task %d assigned twice" % t
                 tasks[t] = 1
 
+        return True
 
