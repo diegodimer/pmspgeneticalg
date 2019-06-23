@@ -14,6 +14,7 @@ class PMSPSolution:
 
         self.x = np.zeros((n+1, n+1, m), dtype=bool)
         self.restrictions = restrictions
+        
 
     def from_order(self,
                    order : list):
@@ -87,7 +88,7 @@ class PMSPSolution:
         # Randomizing the machines, so the first ones aren't favored
         machines = list(range(m))
         random.shuffle(machines)
-
+        
         # Initializes with zero task for each machine
         tasks_per_machine = [0] * m
 
@@ -115,5 +116,5 @@ class PMSPSolution:
         # Generating the instance
         instance = PMSPSolution(m, n, restrictions)
         instance.from_order(order_of_tasks)
-
+        instance.order_of_tasks = order_of_tasks
         return instance

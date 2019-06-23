@@ -1,5 +1,5 @@
 import numpy as np
-
+import PMSPSolution
 
 class PMSPRestrictions:
     def __init__(self,
@@ -11,14 +11,22 @@ class PMSPRestrictions:
         self.G = G.copy()
 
     def evaluate(self,
-                 x : np.ndarray):
-        assert (x.shape == self.G.shape), "Wrong number of tasks/machines"
+                 solution: PMSPSolution):
+        print('SOLUCAO: ', solution.order_of_tasks)
+        max_c = 0       
 
-        max_c = 0        
+        c = [0] * self.m
         for i in range(self.m):
-            c = sum(sum(self.G[:,:,i] * x[:,:,i]))
-            max_c = max(max_c, c)
-            
+            current = 0
+            for j in solution.order_of_tasks[i]:
+                # i+1 pq a matriz 0 e a de processamento, current é a atual, current-1 é a anterior
+                setup_time = self.G[i+1][solution.order_of_tasks[i][current-1]][solution.order_of_tasks[i][current]] if current != 0 else 0
+                current+=1
+                processing_time = self.G[0][j][i]
+                c[i] += setup_time + processing_time
+                print('\n')
+        print('c: ', c)
+        max_c = max(c)
         return max_c
             
 
@@ -35,8 +43,8 @@ class PMSPRestrictions:
         # print(self.G.shape)
         # print((total_tasks + 1, total_tasks + 1, total_machines))
         
-        assert (self.G.shape == (total_tasks + 1, total_tasks + 1, total_machines)), \
-               "Wrong number of tasks/machines"
+#        assert (self.G.shape == (total_tasks + 1, total_tasks + 1, total_machines)), \
+#               "Wrong number of tasks/machines"
                
         tasks = [0] * self.n
         
