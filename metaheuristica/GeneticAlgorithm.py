@@ -1,13 +1,18 @@
 import random
 import math
-
+import PMSPRestrictions
+import PMSPSolution
 import Operators
 
 
 class GeneticAlgorithm:
-    def __init__(self, numberOfWeights, seed = None):
-      self.numberOfWeights = numberOfWeights
-      self.operators = Operators.Operators(numberOfWeights)
+    def __init__(self, 
+                 restrictions: PMSPRestrictions, 
+                 seed = None):
+      self.m = restrictions.m
+      self.n = restrictions.n
+      self.restrictions = restrictions
+      self.operators = Operators.Operators(restrictions)
 
       # Number of solutions generated per operator
       self.previousBestsSize = 5
@@ -21,33 +26,22 @@ class GeneticAlgorithm:
                             self.mediumPointCrossOverSize
 
       self.population = []
-      self.fitness = []
+      # pra acessar o fitness de cada indivíduo: population[i].fitness
+     
 
       # Initializing the population
-      for i in range(self.populationSize):
-        solution = []
-        for j in range(numberOfWeights):
-          solution.append(0.0)
-        self.population.append(solution)
-        self.fitness.append(0.0)
-
-      self.mutationScale = 0.001
-      self.maxMutationScale = 1.0
-
       self.seed = seed
+      
+      for x in range(self.populationSize):
+          individuo = PMSPSolution.random_instance(self.m, self.n, restrictions)
+          self.population.append(individuo)
 
-    # Generates a random population where each weight of each solution is in the interval [a,b]
-    def randomizePopulation(self, a, b):
-      for i in range(self.populationSize):
-        for j in range(self.numberOfWeights):
-          self.population[i][j] = random.uniform(a, b)
-
-    # Sets up to self.populationSize elements of the self.population
-    def setPopulation(self, newPopulation):
-      newPopulationSize = min(len(newPopulation), self.populationSize)
-      for i in range(newPopulationSize):
-        self.population[i] = newPopulation[i]
-
+#    # Generates a random population where each weight of each solution is in the interval [a,b]
+#    def randomizePopulation(self, a, b):
+#      for i in range(self.populationSize):
+#          self.population[i] =  PMSPSolution.random_instance(self.m, self.n, self.restrictions)
+#   
+    
     # Returns a list with the same size of self.population
     def createNewPopulation(self):
       newPopulation = []
