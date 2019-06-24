@@ -56,17 +56,12 @@ if __name__ == '__main__':
     restrictions = PMSPRestrictions(2, 4, G) # 2 máquinas 4 jobs
    
     solution = PMSPSolution.random_instance(2, 4, restrictions)
-    print('evaluate: %d' % restrictions.evaluate(solution))
-#    print("Order:")
-#    print(solution.to_order())
-#    
-#    if restrictions.check_validity(solution.to_order()):
-#        print('Valid instance! Fitness: %d' % restrictions.evaluate(solution.x))
-#    else:
-#        print('Invalid instance!')
-#    
-    
-    # solution.x[0, 0, 1] = True
-    # print(solution.x[0, 0, 0] * 100)
-    # print(solution.x[0, 0, 1] * 100)
-    
+    if solution.fitness == -1:
+        solution.fitness = restrictions.evaluate(solution)
+    print('solution: ', solution.order_of_tasks)
+    print('solution fitness: %d' % solution.fitness)
+   
+    newSol = PMSPSolution.create_instance(2, 4, restrictions, [[2,1],[3,0]])
+    print('new sol: ', newSol.order_of_tasks)
+    print('newSol fitness: ', newSol.fitness)
+

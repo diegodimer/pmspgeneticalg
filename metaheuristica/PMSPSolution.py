@@ -1,7 +1,7 @@
 import numpy as np
 import random
 
-from PMSPRestrictions import PMSPRestrictions
+import PMSPRestrictions
 
 
 class PMSPSolution:
@@ -11,75 +11,9 @@ class PMSPSolution:
                  restrictions : PMSPRestrictions):
         self.m = m
         self.n = n
-
-        self.x = np.zeros((n+1, n+1, m), dtype=bool)
         self.restrictions = restrictions
         
-
-    def from_order(self,
-                   order : list):
-        self.restrictions.check_validity(order)
-        
-        for i in range(self.m):
-            machine_order = order[i]
-            machine_total_tasks = len(machine_order)
-            
-            #print("MO", machine_order, machine_total_tasks)
-
-            # Current machine has no tasks
-            if machine_total_tasks == 0:
-                continue
-            
-            # Dealing with extreme cases
-            first_task = machine_order[0] + 1
-            last_task = machine_order[machine_total_tasks-1] + 1
-            
-            self.x[0, first_task, i] = True
-            self.x[last_task,  0, i] = True
-            
-            # Normal case will only happen when there's more than one task
-            if machine_total_tasks == 1:
-                continue
-                
-            previous_task = first_task
-            for j in range(1, machine_total_tasks):
-                current_task = machine_order[j] + 1
-                self.x[previous_task, current_task, i] = True
-                previous_task = current_task
-                
-            
-    # Avoid using; (I think) it's really inefficient due to its complexity 
-    # (would be something like O(mn²) if every machine could have every task)
-    def to_order(self):
-        order = []
-        
-        for i in range(self.m):
-            machine_order = []
-            
-            previous_task = 0
-            next_task = -1            
-            
-            while next_task != 0:
-                next_task = -1
-                
-                # Searching for the next task
-                for j in range(self.n + 1):
-                    if self.x[previous_task, j, i]:
-                        next_task = j
-                        break
-                
-                # Next task was not found; no task for this machine
-                if next_task == -1:
-                    break
-
-                if next_task != 0:
-                    machine_order.append(next_task-1)
-                                    
-                previous_task = next_task
-                
-            order.append(machine_order)
-
-        return order
+ 
 
     @staticmethod
     def random_instance(m : int,
@@ -115,6 +49,21 @@ class PMSPSolution:
 
         # Generating the instance
         instance = PMSPSolution(m, n, restrictions)
-        instance.from_order(order_of_tasks)
         instance.order_of_tasks = order_of_tasks
+        instance.fitness = restrictions.evaluate(instance)
         return instance
+    
+    @staticmethod
+    def create_instance(m : int,
+                        n : int,
+                        restrictions : PMSPRestrictions,
+                        order_of_tasks: list):
+        instance = PMSPSolution(m, n, restrictions)
+        instance.order_of_tasks = order_of_tasks
+        if(restrictions.check_validity(instance)):
+            instance.fitness = restrictions.evaluate(instance)
+            return instance
+        else:
+            raise Exception("Instancia inválida")
+        
+        

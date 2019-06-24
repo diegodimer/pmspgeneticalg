@@ -12,7 +12,6 @@ class PMSPRestrictions:
 
     def evaluate(self,
                  solution: PMSPSolution):
-        print('SOLUCAO: ', solution.order_of_tasks)
         max_c = 0       
 
         c = [0] * self.m
@@ -24,34 +23,16 @@ class PMSPRestrictions:
                 current+=1
                 processing_time = self.G[0][j][i]
                 c[i] += setup_time + processing_time
-                print('\n')
-        print('c: ', c)
         max_c = max(c)
         return max_c
             
 
     def check_validity(self,
-                       order : list):
-        """for l in order:
-            print(l)"""
-                   
-        total_machines = len(order)
-        total_tasks = 0
-        for machine_order in order:
-            total_tasks += len(machine_order)
-            
-        # print(self.G.shape)
-        # print((total_tasks + 1, total_tasks + 1, total_machines))
-        
-#        assert (self.G.shape == (total_tasks + 1, total_tasks + 1, total_machines)), \
-#               "Wrong number of tasks/machines"
-               
-        tasks = [0] * self.n
-        
-        for machine_order in order:
-            for t in machine_order:
-                assert (tasks[t] == 0), "Task %d assigned twice" % t
-                tasks[t] = 1
+                       solution : PMSPSolution):
 
-        return True
+        if len(solution.order_of_tasks) == self.m: # se tem uma linha pra cada máquina mesmo
+            if len(np.concatenate(solution.order_of_tasks)) == self.n: # se tem o numero certo de tarefas
+                if len(np.unique(np.concatenate(solution.order_of_tasks))) == len(np.concatenate(solution.order_of_tasks)):
+                    return True # se nenhuma tarefa foi associada 2 vezes
+        return False
 
