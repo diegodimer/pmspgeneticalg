@@ -21,7 +21,7 @@ class Operators:
 #      newSolution[mutationSite] += random.uniform(-1.0, 1.0) / mutationScale
 #      return newSolution
 		
-		for x in range(0,mutationScale)
+		if random.random() < mutationScale :
 			#PICKS TASK RANDOMLY TO BE REMOVED FROM A MACHINE
 			while True:
 				maquina_sorteada = random.randrange(0,solution.m)
