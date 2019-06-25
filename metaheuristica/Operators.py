@@ -20,7 +20,28 @@ class Operators:
 #      mutationSite = random.randrange(0, len(solution))
 #      newSolution[mutationSite] += random.uniform(-1.0, 1.0) / mutationScale
 #      return newSolution
-        raise NotImplemented
+		
+		for x in range(0,mutationScale)
+			#PICKS TASK RANDOMLY TO BE REMOVED FROM A MACHINE
+			while True:
+				maquina_sorteada = random.randrange(0,solution.m)
+				if len(solution.order_of_tasks[maquina_sorteada]) != 0:
+					break
+			tarefa_sorteada = random.randrange(0,len(solution.order_of_tasks[maquina_sorteada]))
+			auxiliar = solution.order_of_tasks[maquina_sorteada][tarefa_sorteada]
+			del solution.order_of_tasks[maquina_sorteada][tarefa_sorteada]
+		
+			#CHOOSES NEW MACHINE AND INDEX (DIFFERENT FROM THE ORIGINAL) TO PUT THE CHOSEN TASK
+			while True:
+				maquina_sorteada2 = random.randrange(0,solution.m)
+				if len(solution.order_of_tasks[maquina_sorteada2]) == 0:
+					tarefa_sorteada2 = 0
+				else: tarefa_sorteada2 = random.randrange(0,len(solution.order_of_tasks[maquina_sorteada2]))
+				if not(maquina_sorteada == maquina_sorteada2 and tarefa_sorteada == tarefa_sorteada2):
+					break
+			solution.order_of_tasks[maquina_sorteada2].insert(tarefa_sorteada2,auxiliar)
+		
+        return solution
 
     # Adds a value between (-1.0, 1.0) / self.scale to each weight
     def allPointsMutation(self, 
