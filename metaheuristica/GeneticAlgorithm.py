@@ -9,87 +9,48 @@ class GeneticAlgorithm:
     def __init__(self, 
                  restrictions: PMSPRestrictions, 
                  seed = None):
-      self.m = restrictions.m
-      self.n = restrictions.n
-      self.restrictions = restrictions
-      self.operators = Operators.Operators(restrictions)
+        self.m = restrictions.m
+        self.n = restrictions.n
+        self.restrictions = restrictions
+        self.operators = Operators.Operators(restrictions)
 
-      # Number of solutions generated per operator
-      self.previousBestsSize = 5
-      self.onePointMutationSize = 5
-      self.allPointsMutationSize = 5
-      self.meanCrossOversize = 5
-      self.mediumPointCrossOverSize = 5
-
-      self.populationSize = self.previousBestsSize + self.onePointMutationSize + \
-                            self.allPointsMutationSize + self.meanCrossOversize + \
-                            self.mediumPointCrossOverSize
-
-      self.population = []
-      # pra acessar o fitness de cada indivíduo: population[i].fitness
-     
-
-      # Initializing the population
-      self.seed = seed
-      
-      for x in range(self.populationSize):
-          individuo = PMSPSolution.random_instance(self.m, self.n, restrictions)
-          self.population.append(individuo)
-
-#    # Generates a random population where each weight of each solution is in the interval [a,b]
-#    def randomizePopulation(self, a, b):
-#      for i in range(self.populationSize):
-#          self.population[i] =  PMSPSolution.random_instance(self.m, self.n, self.restrictions)
-#   
+        # Number of solutions generated per operator
+        self.previousBestsSize = 5
+        self.onePointMutationSize = 5
+        self.allPointsMutationSize = 5
+        self.meanCrossOversize = 5
+        self.mediumPointCrossOverSize = 5
+          
+        self.populationSize =   self.previousBestsSize + self.onePointMutationSize + \
+                                self.allPointsMutationSize + self.meanCrossOversize + \
+                                self.mediumPointCrossOverSize
+                                
+        self.population = []
+        # pra acessar o fitness de cada indivíduo: population[i].fitness
+                                
+        self.seed = seed
+        # Initializing the population
+        for x in range(self.populationSize):
+            individuo = PMSPSolution.random_instance(self.m, self.n, restrictions)
+            self.population.append(individuo)
+        
+        #ordena a população inicial (talvez não precise)
+        self.population.sort(key=lambda x: x.fitness, reverse=False)
     
-    # Returns a list with the same size of self.population
-    def createNewPopulation(self):
-      newPopulation = []
-      newFitness = []
 
-      # Initializing the new population
-      for i in range(self.populationSize):
-        solution = []
-        for j in range(self.numberOfWeights):
-          solution.append(0.0)
-        newPopulation.append(solution)
-        newFitness.append(0.0)
-
-      return newPopulation, newFitness
-
-    # To determine which solutions have the best fitness
-    # Implements selection sort
-    def orderPopulationByFitness(self, population, fitness):
-      minFitness = float("inf")
-      minFitnessIndex = -1
-      for i in range(len(population)):
-        minFitness = fitness[i]
-        minFitnessIndex = i
-
-        # Finds the maximum value
-        for j in range(i+1, len(population)):
-          if self.fitness[j] < minFitness:
-            minFitness = fitness[j]
-            minFitnessIndex = j
-
-        # Puts the minFitness and minFitnessIndex in their positions
-        if minFitnessIndex != i:
-          # Swaps the fitness
-          aux = fitness[i]
-          fitness[i] = fitness[minFitnessIndex]
-          fitness[minFitnessIndex] = aux
-          # Swaps the solutions
-          auxSolution = population[i]
-          population[i] = population[minFitnessIndex]
-          population[minFitnessIndex] = auxSolution
-      return population, fitness
+    # Ordena a população recebida como parâmetro de acordo com o fitness dela
+    @staticmethod
+    def orderPopulationByFitness(population: list):
+        population = sorted(population, key=lambda x: x.fitness, reverse=False)
+        return population
 
     # Returns 0 if there was no increasing in the fitness value of any member of the population
     # Otherwise returns a positive number, which represent the number of positions which had it's fitness increased
-    def improvementOfPopulation(self, newFitness):
+    def improvementOfPopulation(self,
+                                newPopulation: list):
       imp = 0
       for i in range(self.populationSize):
-        if (newFitness[i] < self.fitness[i]):
+        if (newPopulation[i].fitness < self.population[i].fitness):
           imp += 1
       return imp
 
@@ -104,7 +65,7 @@ class GeneticAlgorithm:
       return matingPool
 
 
-    def run(self, evaluateFunction, maxIterations):
+    def run(self, maxIterations):
       random.seed(self.seed)
       for i in range(self.populationSize):
         self.fitness[i] = evaluateFunction(self.population[i])
