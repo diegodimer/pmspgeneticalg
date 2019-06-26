@@ -1,6 +1,6 @@
 import random
 import numpy as np
-
+import Operators as OP
 from PMSPSolution import PMSPSolution
 from PMSPRestrictions import PMSPRestrictions
 import GeneticAlgorithm
@@ -58,13 +58,14 @@ if __name__ == '__main__':
     solution = PMSPSolution.random_instance(restrictions)
     if solution.fitness == -1:
         solution.fitness = restrictions.evaluate(solution)
-    print('solution: ', solution.order_of_tasks)
-    print('solution fitness: %d' % solution.fitness)
-   
+    
     newSol = PMSPSolution.create_instance(restrictions, [[2,1],[3,0]])
-    print('new sol: ', newSol.order_of_tasks)
-    print('newSol fitness: ', newSol.fitness)
-    print('newSol c: ', newSol.c)
+    
     restrictions.evaluate_machine(newSol, 0)
+    op = OP.Operators(newSol.restrictions)
+    newnew = op.meanCrossOver(newSol, solution)
+    print('pais: ', solution.order_of_tasks)
+    print('pais: ',newSol.order_of_tasks)
+    print('filho: ',newnew.order_of_tasks)
 #    ga = GeneticAlgorithm.GeneticAlgorithm(restrictions)
 #    ga.run(100)

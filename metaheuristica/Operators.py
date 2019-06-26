@@ -1,8 +1,8 @@
 import random
 import math
 import PMSPRestrictions
-import PMSPSolution
-
+from PMSPSolution import PMSPSolution
+import numpy as numpy
 class Operators:
     def __init__(self, 
                  restrictions: PMSPRestrictions):
@@ -38,23 +38,38 @@ class Operators:
     def allPointsMutation(self, 
                           solution: PMSPSolution, 
                           mutationScale):
-#      newSolution = []
-#      for i in range(self.numberOfWeights):
-#        newSolution.append(solution[i] + (random.uniform(-1.0, 1.0) / mutationScale))
-#      return newSolution
-        raise NotImplemented
+        m=0
+        for i in solution.order_of_tasks:
+            if random.random() < 0.20: # com 20% de chances 
+                random.shuffle(i) #aleatoriza a ordem das tarefas naquela máquina
+                solution.restrictions.evaluate_machine(solution, m) #recalcula o fitness da solução praquela máquina
+        return solution
 
     # Returns the mean of the two solutions
     def meanCrossOver(self, 
                       solution1: PMSPSolution, 
                       solution2: PMSPSolution):
-#      newSolution = []
-#      for i in range(len(solution1)):
-#        newValue = (solution1[i] + solution2[i]) / 2.0
-#        newSolution.append(newValue)
-#      return newSolution
-        raise NotImplemented
+        newSolution = [[] for x in range(solution1.m)] 
+        jobs = [x for x in range(solution1.n)]
 
+        for i in range(solution1.m): #pra cada máquina
+            if solution1.c[i] < solution2.c[i]: #poem a linha do pai com menor makespan
+                for j in solution1.order_of_tasks[i]:
+                    if j not in sum(newSolution, []):
+                        newSolution[i].append(j)
+                        jobs.pop(jobs.index(j))
+            else:
+                for j in solution2.order_of_tasks[i]:
+                    if j not in sum(newSolution, []):
+                        newSolution[i].append(j)
+                        jobs.pop(jobs.index(j))
+
+        while len(jobs) != 0:
+            newSolution[random.randint(0, solution1.m-1)].append(jobs.pop())
+       
+        sol = PMSPSolution.create_instance(solution1.restrictions, newSolution)
+        return sol
+            
     # newSolution takes the first half of the weights from solution1 and the other half from solution2
     def mediumPointCrossOver(self, 
                              solution1: PMSPRestrictions, 

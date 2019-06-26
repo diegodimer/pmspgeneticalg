@@ -39,11 +39,10 @@ class PMSPRestrictions:
             newC += setup_time + processing_time
         solution.c[machine] = newC
         solution.fitness = max(solution.c)
-        print('fitness recalculada: ', newC)
+
         
     def check_validity(self,
                        solution : PMSPSolution):
-
         if len(solution.order_of_tasks) == self.m: # se tem uma linha pra cada máquina mesmo
             if len(np.concatenate(solution.order_of_tasks)) == self.n: # se tem o numero certo de tarefas
                 if len(np.unique(np.concatenate(solution.order_of_tasks))) == len(np.concatenate(solution.order_of_tasks)):
