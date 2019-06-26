@@ -3,7 +3,7 @@ import numpy as np
 
 from PMSPSolution import PMSPSolution
 from PMSPRestrictions import PMSPRestrictions
-
+import GeneticAlgorithm
 
 if __name__ == '__main__':
     random.seed()
@@ -55,13 +55,16 @@ if __name__ == '__main__':
     
     restrictions = PMSPRestrictions(2, 4, G) # 2 máquinas 4 jobs
    
-    solution = PMSPSolution.random_instance(2, 4, restrictions)
+    solution = PMSPSolution.random_instance(restrictions)
     if solution.fitness == -1:
         solution.fitness = restrictions.evaluate(solution)
     print('solution: ', solution.order_of_tasks)
     print('solution fitness: %d' % solution.fitness)
    
-    newSol = PMSPSolution.create_instance(2, 4, restrictions, [[2,1],[3,0]])
+    newSol = PMSPSolution.create_instance(restrictions, [[2,1],[3,0]])
     print('new sol: ', newSol.order_of_tasks)
     print('newSol fitness: ', newSol.fitness)
-
+    print('newSol c: ', newSol.c)
+    restrictions.evaluate_machine(newSol, 0)
+#    ga = GeneticAlgorithm.GeneticAlgorithm(restrictions)
+#    ga.run(100)
