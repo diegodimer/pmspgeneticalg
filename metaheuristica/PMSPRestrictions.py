@@ -24,9 +24,23 @@ class PMSPRestrictions:
                 processing_time = self.G[0][j][i]
                 c[i] += setup_time + processing_time
         max_c = max(c)
+        solution.c = c #salva a solução pra cada maquina
         return max_c
-            
-
+    
+    def evaluate_machine(self,
+                         solution: PMSPSolution,
+                         machine: int):
+        newC = 0
+        current = 0
+        for j in solution.order_of_tasks[machine]:
+            setup_time = self.G[machine+1][solution.order_of_tasks[machine][current-1]][solution.order_of_tasks[machine][current]] if current != 0 else 0
+            current+=1
+            processing_time = self.G[0][j][machine]
+            newC += setup_time + processing_time
+        solution.c[machine] = newC
+        solution.fitness = max(solution.c)
+        print('fitness recalculada: ', newC)
+        
     def check_validity(self,
                        solution : PMSPSolution):
 

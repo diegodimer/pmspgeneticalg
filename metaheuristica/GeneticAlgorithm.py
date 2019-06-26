@@ -1,7 +1,7 @@
 import random
 import math
-import PMSPRestrictions
-import PMSPSolution
+from PMSPRestrictions import PMSPRestrictions
+from PMSPSolution import PMSPSolution
 import Operators
 
 
@@ -24,19 +24,21 @@ class GeneticAlgorithm:
         self.populationSize =   self.previousBestsSize + self.onePointMutationSize + \
                                 self.allPointsMutationSize + self.meanCrossOversize + \
                                 self.mediumPointCrossOverSize
-                                
+        #print('size: ',self.populationSize)
         self.population = []
         # pra acessar o fitness de cada indivíduo: population[i].fitness
                                 
         self.seed = seed
+        random.seed(self.seed)
+        
         # Initializing the population
         for x in range(self.populationSize):
-            individuo = PMSPSolution.random_instance(self.m, self.n, restrictions)
+            individuo = PMSPSolution.random_instance(restrictions)
             self.population.append(individuo)
         
         #ordena a população inicial (talvez não precise)
         self.population.sort(key=lambda x: x.fitness, reverse=False)
-    
+        
 
     # Ordena a população recebida como parâmetro de acordo com o fitness dela
     @staticmethod
@@ -55,75 +57,50 @@ class GeneticAlgorithm:
       return imp
 
 
-    def createMatingPool(self):
-      matingPool = []
-      for i in range(self.populationSize):
-        # 5 times so each solution has at least 5 appearances
-        appearancesI = round(5 * self.fitness[self.populationSize-1] / self.fitness[i])
-        for j in range(appearancesI):
-          matingPool.append(self.population[i])
-      return matingPool
-
-
-    def run(self, maxIterations):
+    def run(self, maxIterations):  
       random.seed(self.seed)
-      for i in range(self.populationSize):
-        self.fitness[i] = evaluateFunction(self.population[i])
-
-      self.population, self.fitness = self.orderPopulationByFitness(self.population, self.fitness)
-      newPopulation, newFitness = self.createNewPopulation()
-
+      
+      newPopulation=[];
       # Calculating each new generation
       for i in range(maxIterations):
         print("Generation " + str(i))
-        matingPool = self.createMatingPool()
-
         offset = 0
-        # Calculating the new population
         for i in range(self.previousBestsSize):
           # Copies from previous population
-          newPopulation[i + offset] = self.population[i]
+          newPopulation.append(self.population[i])
 
-        offset += self.previousBestsSize
+        offset = self.previousBestsSize
+        
         for i in range(self.onePointMutationSize):
           # onePointMutation()
-          solution = random.choice(matingPool)
-          newPopulation[i + offset] = self.operators.onePointMutation(solution, self.mutationScale)
+          solution = random.choice(self.population)
+          newPopulation.append(self.operators.onePointMutation(solution, 1))
 
         offset += self.onePointMutationSize
         for i in range(self.allPointsMutationSize):
           # allPointsMutation()
-          solution = random.choice(matingPool)
-          newPopulation[i + offset] = self.operators.allPointsMutation(solution, self.mutationScale)
+          solution = random.choice(self.population)
+          newPopulation.append(self.operators.allPointsMutation(solution, 1))
 
         offset += self.allPointsMutationSize
+        limit = self.populationSize/4 # seleciona os 1/4 melhores da população
+        
         for i in range(self.meanCrossOversize):
           # meanCrossOver()
-          solution1 = random.choice(matingPool)
-          solution2 = random.choice(matingPool)
-          newPopulation[i + offset] = self.operators.meanCrossOver(solution1, solution2)
+          solution1 = self.population[random.randint(0,limit)]
+          solution2 = random.choice(self.population)
+          newPopulation.append(self.operators.meanCrossOver(solution1, solution2))
 
         offset += self.meanCrossOversize
         for i in range(self.mediumPointCrossOverSize):
           # mediumPointCrossOver()
-          solution1 = random.choice(matingPool)
-          solution2 = random.choice(matingPool)
-          newPopulation[i + offset] = self.operators.mediumPointCrossOver(solution1, solution2)
+          solution1 = self.population[random.randint(0, limit)]
+          solution2 = random.choice(self.population)
+          newPopulation.append(self.operators.mediumPointCrossOver(solution1, solution2))
 
-        for i in range(self.populationSize):
-            #print("Evaluating " + str(newPopulation[i]))
-            newFitness[i] = evaluateFunction(newPopulation[i])
-
-        newPopulation, newFitness = self.orderPopulationByFitness(newPopulation, newFitness)
-
-        print(newFitness[0])
-
-        self.population = newPopulation
-        self.fitness = newFitness
-
-        self.mutationScale *= 2
-        if self.mutationScale > self.maxMutationScale:
-          self.mutationScale = self.maxMutationScale
-
+      
+        self.population = GeneticAlgorithm.orderPopulationByFitness(newPopulation)
+        print('gen ', i, ' best fitness: ', self.population[0].fitness)
+      
       print(self.population[0])
       return self.population[0]
