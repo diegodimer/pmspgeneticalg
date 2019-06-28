@@ -29,13 +29,13 @@ class GeneticAlgorithm:
         self.population = []
         # pra acessar o fitness de cada indivíduo: population[i].fitness
                             
-        print('pb: ', self.previousBestsSize)
-        print('om: ', self.onePointMutationSize)
-        print('am: ', self.allPointsMutationSize)
-        print('fc: ', self.firstCrossOverSize)
-        print('sc: ', self.secondCrossOverSize)
-        print('tc: ', self.thirdCrossOverSize)
-        print('rn: ', self.randomSize)
+#        print('pb: ', self.previousBestsSize)
+#        print('om: ', self.onePointMutationSize)
+#        print('am: ', self.allPointsMutationSize)
+#        print('fc: ', self.firstCrossOverSize)
+#        print('sc: ', self.secondCrossOverSize)
+#        print('tc: ', self.thirdCrossOverSize)
+#        print('rn: ', self.randomSize)
         self.seed = seed
         random.seed(self.seed)
         
@@ -48,39 +48,21 @@ class GeneticAlgorithm:
         self.population.sort(key=lambda x: x.fitness, reverse=False)
         
 
-    # Ordena a população recebida como parâmetro de acordo com o fitness dela
-    @staticmethod
-    def orderPopulationByFitness(population: list):
-        population = sorted(population, key=lambda x: x.fitness, reverse=False)
-        return population
-
-    # Returns 0 if there was no increasing in the fitness value of any member of the population
-    # Otherwise returns a positive number, which represent the number of positions which had it's fitness increased
-    def improvementOfPopulation(self,
-                                newPopulation: list):
-      imp = 0
-      for i in range(self.populationSize):
-        if (newPopulation[i].fitness < self.population[i].fitness):
-          imp += 1
-      return imp
-
-
     def run(self, maxIterations):  
       random.seed(self.seed)
-      
-      newPopulation=[];
-      
-      top40 = int(self.populationSize * 0.4)
      
+      top40 = int(self.populationSize * 0.4)
       top10 = int(self.populationSize * 0.1)
       
       op = Operators(self.restrictions)
       # Calculating each new generation
       for j in range(maxIterations):
         
+        newPopulation=[]
 
         for i in range(self.previousBestsSize):
             newPopulation.append(self.population[i])
+#            print('passando pra prox ', self.population[i].fitness)
         
         for i in range(self.onePointMutationSize):
             target = random.choice(self.population[0:top10]) #seleciona 1 entre os top 10 pra mutar
@@ -114,7 +96,10 @@ class GeneticAlgorithm:
             newInd = PMSPSolution.random_instance(self.restrictions)
             newPopulation.append(newInd)
     
-        self.population = GeneticAlgorithm.orderPopulationByFitness(newPopulation)
-        print('gen ', j, ' best fitness: ', self.population[0].fitness)
- 
+        newPopulation.sort(key=lambda x: x.fitness, reverse=False)
+        self.population = newPopulation
+        print('gen ', j, ' best fitness: ', newPopulation[0].fitness)
+#        for i in self.population:
+#            print(i.fitness)
+
       return self.population[0]
