@@ -10,9 +10,9 @@ def ler_instancia(nome):
         f = open(nome,"r")
         if f.mode == "r":
                 contents = f.readlines()
-                print(contents[1])
-                print(contents[2])
-                print(contents[4])
+#                print(contents[1])
+#                print(contents[2])
+#                print(contents[4])
                 linha = contents[4].split(" ")
         f.close()
         G = []
@@ -76,71 +76,15 @@ def main():
      ...
      S_N_1_M S_N_2_M ... S_N_N_M
     '''
-    G = np.asarray(
-    [ [
-      [ 5,  5],
-      [10, 10],
-      [40, 20],
-      [40, 20],  # matriz de Processamento   
-      ],
-     
-      [
-      [ 0,  1,  2,  3],     # matriz de setup pra máquina 1
-      [ 6,  0,  5,  4],       
-      [ 7,  8,  0,  9],
-      [10, 11, 12,  0]
-      ],
 
-      [
-      [ 0, 13, 14, 15],    # matriz de setup pra máquina 2
-      [18,  0, 17, 16],       
-      [19, 20,  0, 21],
-      [22, 23, 24,  0]
-      ]
-    ])
 
     
     G2 = ler_instancia("20on4Rp50Rs50_1original.dat")
-    print("valor de G[0]: ")
-    print(G2[0])
-    print("valor de g[1]: ")
-    print(G2[1])
-    print("valor de len(G2[0][0]): ")
-    print(str(len(G2[0][0])))
-    print("valor de len(G2[0]): ")
-    print(str(len(G2[0])))
+
     restrictions = PMSPRestrictions(len(G2[0][0]),len(G2[0]), G2)
-
-    
-   # restrictions = PMSPRestrictions(2, 4, G) # 2 máquinas 4 jobs
-
-    solution1 = PMSPSolution.random_instance(restrictions)
-    print('solution: ', solution1.order_of_tasks)
-
-    solution2 = PMSPSolution.random_instance(restrictions)
-    print('solution: ', solution2.order_of_tasks)
-
-    operators = Operators(restrictions)
-    operators.crossOver_Vallada_LocalSearch(solution1,solution2)
-#    if solution.fitness == -1:
-#        solution.fitness = restrictions.evaluate(solution)
-#    print('solution: ', solution.order_of_tasks)
-#    print('solution fitness: %d' % solution.fitness)
-
-#    newSol = PMSPSolution.create_instance(restrictions, [[2,1],[0,3]])
-#    print('new sol: ', newSol.order_of_tasks)
-#    print('newSol fitness: ', newSol.fitness)
-#    print('newSol c: ', newSol.c)
-#    restrictions.evaluate_machine(newSol, 0)
-#    ga = GeneticAlgorithm.GeneticAlgorithm(restrictions)
-#    ga.run(100)
- #   newSol.order_of_tasks = [[0,1,2],[]]
- #   operators = Operators(restrictions)
- #   operators.local_search(restrictions, newSol.order_of_tasks[0],0,3)
- #   newSol2 = PMSPSolution.create_instance(restrictions, [[0,1,2,3],[]])
- #   newSol.order_of_tasks = [[0],[3,2,1]]
- #   operators.crossOver_Vallada_LocalSearch(newSol2,newSol)
-                                    
+    ga = GeneticAlgorithm.GeneticAlgorithm(restrictions,100)
+    ga.run(100)
+  
     
 if __name__ == '__main__':
     main()

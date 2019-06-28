@@ -2,7 +2,7 @@ import random
 import math
 from PMSPRestrictions import PMSPRestrictions
 from PMSPSolution import PMSPSolution
-import Operators
+from Operators import Operators
 
 
 class GeneticAlgorithm:
@@ -13,21 +13,29 @@ class GeneticAlgorithm:
         self.m = restrictions.m
         self.n = restrictions.n
         self.restrictions = restrictions
-        self.operators = Operators.Operators(restrictions)
+        self.operators = Operators(restrictions)
 
         self.populationSize =   populationSize
         
         # Number of solutions generated per operator
-        self.previousBestsSize = 5
-        self.onePointMutationSize = 5
-        self.allPointsMutationSize = 5
-        self.firstCrossOverSize = 5
-        self.secondCrossOverSize = 5
-        self.thirdCrossOverSize = 5
+        self.previousBestsSize = int(populationSize*0.1) # 10%
+        self.onePointMutationSize = int(populationSize*0.12)# 12%
+        self.allPointsMutationSize = int(populationSize*0.12) # 12%
+        self.firstCrossOverSize = int(populationSize*0.20) # 20%
+        self.secondCrossOverSize = int(populationSize*0.20) # 20%
+        self.thirdCrossOverSize = int(populationSize*0.20)# 20%
+        self.randomSize = int(populationSize*0.06) # 6%
                   
         self.population = []
         # pra acessar o fitness de cada indivíduo: population[i].fitness
-                                
+                            
+        print('pb: ', self.previousBestsSize)
+        print('om: ', self.onePointMutationSize)
+        print('am: ', self.allPointsMutationSize)
+        print('fc: ', self.firstCrossOverSize)
+        print('sc: ', self.secondCrossOverSize)
+        print('tc: ', self.thirdCrossOverSize)
+        print('rn: ', self.randomSize)
         self.seed = seed
         random.seed(self.seed)
         
@@ -61,44 +69,51 @@ class GeneticAlgorithm:
       random.seed(self.seed)
       
       newPopulation=[];
+      
+      top40 = int(self.populationSize * 0.4)
+     
+      top10 = int(self.populationSize * 0.1)
+      
+      op = Operators(self.restrictions)
       # Calculating each new generation
       for j in range(maxIterations):
-        print("Generation " + str(j))
-        offset = 0
-        for i in range(self.previousBestsSize):
-          # Copies from previous population
-          newPopulation.append(self.population[i])
+        
 
-        offset = self.previousBestsSize
+        for i in range(self.previousBestsSize):
+            newPopulation.append(self.population[i])
         
         for i in range(self.onePointMutationSize):
-          # onePointMutation()
-          solution = random.choice(self.population)
-          newPopulation.append(self.operators.onePointMutation(solution, 1))
-
-        offset += self.onePointMutationSize
-        for i in range(self.allPointsMutationSize):
-          # allPointsMutation()
-          solution = random.choice(self.population)
-          newPopulation.append(self.operators.allPointsMutation(solution, 1))
-
-        offset += self.allPointsMutationSize
-        limit = self.populationSize/4 # seleciona os 1/4 melhores da população
+            target = random.choice(self.population[0:top10]) #seleciona 1 entre os top 10 pra mutar
+            newPopulation.append(op.onePointMutation(target))
         
-        for i in range(self.meanCrossOversize):
-          # meanCrossOver()
-          solution1 = self.population[random.randint(0,limit)]
-          solution2 = random.choice(self.population)
-          newPopulation.append(self.operators.meanCrossOver(solution1, solution2))
-
-        offset += self.meanCrossOversize
-        for i in range(self.mediumPointCrossOverSize):
-          # mediumPointCrossOver()
-          solution1 = self.population[random.randint(0, limit)]
-          solution2 = random.choice(self.population)
-          newPopulation.append(self.operators.firstCrossOver(solution1, solution2))
-
-      
+        
+        for i in range(self.allPointsMutationSize):
+            target = random.choice(self.population[0:top10])
+            newPopulation.append(op.allPointsMutation(target))
+        
+        for i in range(self.firstCrossOverSize):
+            target1 = random.choice(self.population[0:top10])
+            target2 = random.choice(self.population[0:top40])
+            newPopulation.append(op.firstCrossOver(target1, target2))
+        
+        for i in range(int(self.secondCrossOverSize/2)):
+            target1 = random.choice(self.population[0:top10])
+            target2 = random.choice(self.population[0:top40])
+            offspring = op.crossOver_Vallada(target1, target2)
+            newPopulation.append(offspring[0])
+            newPopulation.append(offspring[1])
+                        
+        for i in range(int(self.thirdCrossOverSize/2)):
+            target1 = random.choice(self.population[0:top10])
+            target2 = random.choice(self.population[0:top40])
+            offspring = op.crossOver_Vallada_LocalSearch(target1, target2)
+            newPopulation.append(offspring[0])
+            newPopulation.append(offspring[1])            
+            
+        for i in range(self.randomSize):
+            newInd = PMSPSolution.random_instance(self.restrictions)
+            newPopulation.append(newInd)
+    
         self.population = GeneticAlgorithm.orderPopulationByFitness(newPopulation)
         print('gen ', j, ' best fitness: ', self.population[0].fitness)
  

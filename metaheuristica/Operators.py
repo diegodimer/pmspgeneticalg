@@ -12,8 +12,7 @@ class Operators:
 
     # Adds a value between (-1.0, 1.0) / self.scale to one weight
     def onePointMutation(self, 
-                         solution: PMSPSolution, 
-                         mutationScale):
+                         solution: PMSPSolution):
     
         newSolution = solution.order_of_tasks
         firstMachine = random.randint(0, self.restrictions.m-1)
@@ -34,31 +33,11 @@ class Operators:
         solution.restrictions.evaluate_machine(solution, firstMachine)
         solution.restrictions.evaluate_machine(solution, secondMachine)
         return solution
-#        if random.random() < mutationScale :
-#			#PICKS TASK RANDOMLY TO BE REMOVED FROM A MACHINE
-#            while True:
-#                maquina_sorteada = random.randrange(0,solution.m)
-#                if len(solution.order_of_tasks[maquina_sorteada]) != 0:
-#                    break
-#                tarefa_sorteada = random.randrange(0,len(solution.order_of_tasks[maquina_sorteada]))
-#                auxiliar = solution.order_of_tasks[maquina_sorteada][tarefa_sorteada]
-#                del solution.order_of_tasks[maquina_sorteada][tarefa_sorteada]
-#		
-#			#CHOOSES NEW MACHINE AND INDEX (DIFFERENT FROM THE ORIGINAL) TO PUT THE CHOSEN TASK
-#            while True:
-#                maquina_sorteada2 = random.randrange(0,solution.m)
-#                if len(solution.order_of_tasks[maquina_sorteada2]) == 0:
-#                    tarefa_sorteada2 = 0
-#                else: tarefa_sorteada2 = random.randrange(0,len(solution.order_of_tasks[maquina_sorteada2]))
-#                if not(maquina_sorteada == maquina_sorteada2 and tarefa_sorteada == tarefa_sorteada2):
-#                    break
-#                solution.order_of_tasks[maquina_sorteada2].insert(tarefa_sorteada2,auxiliar)
-#            return solution
+
 
     # Adds a value between (-1.0, 1.0) / self.scale to each weight
     def allPointsMutation(self, 
-                          solution: PMSPSolution, 
-                          mutationScale):
+                          solution: PMSPSolution):
         m=0
         for i in solution.order_of_tasks:
             if random.random() < 0.20: # com 20% de chances 
@@ -143,15 +122,16 @@ class Operators:
 			
             list1.append(aux1)
             list2.append(aux2)
-        print(jobs_list1)
-        print(jobs_list2)
-        print(list1)
-        print(list2)	
+#        print(jobs_list1)
+#        print(jobs_list2)
+#        print(list1)
+#        print(list2)	
         offspring = []
-        offspring.append(list1)
-        offspring.append(list2)
+        offspring.append(PMSPSolution.create_instance(self.restrictions, list1))
+        offspring.append(PMSPSolution.create_instance(self.restrictions, list2))
         
         return offspring
+    
     def crossOver_Vallada_LocalSearch(self, parent1: PMSPSolution, parent2: PMSPSolution):
         list1 = []
         list2 = []
@@ -198,16 +178,17 @@ class Operators:
 			
             list1.append(aux1)
             list2.append(aux2)
-        print(jobs_list1)
-        print(jobs_list2)
-        print(list1)
-        print(list2)	
+#        print(jobs_list1)
+#        print(jobs_list2)
+#        print(list1)
+#        print(list2)	
         offspring = []
-        offspring.append(list1)
-        offspring.append(list2)
+        offspring.append(PMSPSolution.create_instance(self.restrictions, list1))
+        offspring.append(PMSPSolution.create_instance(self.restrictions, list2))
+        return offspring
 
     def local_search(self,restrictions: PMSPRestrictions, solution: [],machine: int,job: int):
-        print(solution)
+#        print(solution)
         min_setup = sys.maxsize;
         if len(solution) > 0 :
             for j in range(len(solution)+1):
@@ -220,12 +201,12 @@ class Operators:
                     setup = restrictions.G[machine+1][job][solution[j]]
                     setup += restrictions.G[machine+1][solution[j-1]][job]
                     setup -= restrictions.G[machine+1][solution[j-1]][solution[j]]
-                print("valor do setup: "+str(setup)+" para j = "+str(j))
+#                print("valor do setup: "+str(setup)+" para j = "+str(j))
                 if setup < min_setup:
-                    print(" atualizando setup, novo valor: "+str(setup)+" \n")
+#                    print(" atualizando setup, novo valor: "+str(setup)+" \n")
                     min_setup = setup
                     fitness_index = j
-            print("melhor index pra tarefa "+str(job)+" eh o index "+str(fitness_index)+" \n")
+#            print("melhor index pra tarefa "+str(job)+" eh o index "+str(fitness_index)+" \n")
 		#IF FITNESS_INDEX IS EQUAL TO THE LIST SIZE, IT MEANS THAT THE JOB MUST BE APPENDED AT THE END
             return fitness_index
         else: return 0
