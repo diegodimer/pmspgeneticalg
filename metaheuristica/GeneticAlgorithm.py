@@ -8,23 +8,23 @@ import Operators
 class GeneticAlgorithm:
     def __init__(self, 
                  restrictions: PMSPRestrictions, 
+                 populationSize: int,
                  seed = None):
         self.m = restrictions.m
         self.n = restrictions.n
         self.restrictions = restrictions
         self.operators = Operators.Operators(restrictions)
 
+        self.populationSize =   populationSize
+        
         # Number of solutions generated per operator
         self.previousBestsSize = 5
         self.onePointMutationSize = 5
         self.allPointsMutationSize = 5
-        self.meanCrossOversize = 0
-        self.mediumPointCrossOverSize = 5
-          
-        self.populationSize =   self.previousBestsSize + self.onePointMutationSize + \
-                                self.allPointsMutationSize + self.meanCrossOversize + \
-                                self.mediumPointCrossOverSize
-        #print('size: ',self.populationSize)
+        self.firstCrossOverSize = 5
+        self.secondCrossOverSize = 5
+        self.thirdCrossOverSize = 5
+                  
         self.population = []
         # pra acessar o fitness de cada indivíduo: population[i].fitness
                                 
