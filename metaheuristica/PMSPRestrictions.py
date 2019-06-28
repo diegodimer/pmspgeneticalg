@@ -33,13 +33,13 @@ class PMSPRestrictions:
         newC = 0
         current = 0
         for j in solution.order_of_tasks[machine]:
-            setup_time = self.G[machine+1][solution.order_of_tasks[machine][current-1]][solution.order_of_tasks[machine][current]] if current != 0 else 0
+            setup_time = 0 if current == 0 else self.G[machine+1][solution.order_of_tasks[machine][current-1]][solution.order_of_tasks[machine][current]] 
             current+=1
             processing_time = self.G[0][j][machine]
             newC += setup_time + processing_time
         solution.c[machine] = newC
         solution.fitness = max(solution.c)
-
+        return newC
         
     def check_validity(self,
                        solution : PMSPSolution):

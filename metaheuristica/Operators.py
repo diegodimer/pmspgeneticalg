@@ -13,26 +13,46 @@ class Operators:
     def onePointMutation(self, 
                          solution: PMSPSolution, 
                          mutationScale):
-        if random.random() < mutationScale :
-			#PICKS TASK RANDOMLY TO BE REMOVED FROM A MACHINE
-            while True:
-                maquina_sorteada = random.randrange(0,solution.m)
-                if len(solution.order_of_tasks[maquina_sorteada]) != 0:
-                    break
-                tarefa_sorteada = random.randrange(0,len(solution.order_of_tasks[maquina_sorteada]))
-                auxiliar = solution.order_of_tasks[maquina_sorteada][tarefa_sorteada]
-                del solution.order_of_tasks[maquina_sorteada][tarefa_sorteada]
-		
-			#CHOOSES NEW MACHINE AND INDEX (DIFFERENT FROM THE ORIGINAL) TO PUT THE CHOSEN TASK
-            while True:
-                maquina_sorteada2 = random.randrange(0,solution.m)
-                if len(solution.order_of_tasks[maquina_sorteada2]) == 0:
-                    tarefa_sorteada2 = 0
-                else: tarefa_sorteada2 = random.randrange(0,len(solution.order_of_tasks[maquina_sorteada2]))
-                if not(maquina_sorteada == maquina_sorteada2 and tarefa_sorteada == tarefa_sorteada2):
-                    break
-                solution.order_of_tasks[maquina_sorteada2].insert(tarefa_sorteada2,auxiliar)
-            return solution
+    
+        newSolution = solution.order_of_tasks
+        firstMachine = random.randint(0, self.restrictions.m-1)
+        secondMachine = random.randint(0, self.restrictions.m-1)
+        firstTask = random.randint(0, len(newSolution[firstMachine])-1) if len(newSolution[firstMachine])>0 else -1
+        secondTask = random.randint(0, len(newSolution[secondMachine])-1) if len(newSolution[secondMachine])>0 else -1
+        
+        if firstTask != -1 and secondTask != -1:
+            newSolution[firstMachine][firstTask], newSolution[secondMachine][secondTask] = newSolution[secondMachine][secondTask], newSolution[firstMachine][firstTask]  
+        elif firstTask == -1 and secondTask != -1:
+            newSolution[firstMachine].append(newSolution[secondMachine][secondTask])
+            newSolution[secondMachine].pop(newSolution[secondMachine].index(newSolution[secondMachine][secondTask]))
+        elif secondTask == -1 and firstTask != -1:
+            newSolution[secondMachine].append(newSolution[firstMachine][firstTask])
+            newSolution[firstMachine].pop(newSolution[firstMachine].index(newSolution[firstMachine][firstTask]))
+
+        solution.order_of_tasks = newSolution
+        solution.restrictions.evaluate_machine(solution, firstMachine)
+        solution.restrictions.evaluate_machine(solution, secondMachine)
+        return solution
+#        if random.random() < mutationScale :
+#			#PICKS TASK RANDOMLY TO BE REMOVED FROM A MACHINE
+#            while True:
+#                maquina_sorteada = random.randrange(0,solution.m)
+#                if len(solution.order_of_tasks[maquina_sorteada]) != 0:
+#                    break
+#                tarefa_sorteada = random.randrange(0,len(solution.order_of_tasks[maquina_sorteada]))
+#                auxiliar = solution.order_of_tasks[maquina_sorteada][tarefa_sorteada]
+#                del solution.order_of_tasks[maquina_sorteada][tarefa_sorteada]
+#		
+#			#CHOOSES NEW MACHINE AND INDEX (DIFFERENT FROM THE ORIGINAL) TO PUT THE CHOSEN TASK
+#            while True:
+#                maquina_sorteada2 = random.randrange(0,solution.m)
+#                if len(solution.order_of_tasks[maquina_sorteada2]) == 0:
+#                    tarefa_sorteada2 = 0
+#                else: tarefa_sorteada2 = random.randrange(0,len(solution.order_of_tasks[maquina_sorteada2]))
+#                if not(maquina_sorteada == maquina_sorteada2 and tarefa_sorteada == tarefa_sorteada2):
+#                    break
+#                solution.order_of_tasks[maquina_sorteada2].insert(tarefa_sorteada2,auxiliar)
+#            return solution
 
     # Adds a value between (-1.0, 1.0) / self.scale to each weight
     def allPointsMutation(self, 
@@ -46,13 +66,16 @@ class Operators:
         return solution
 
     # Returns the mean of the two solutions
-    def meanCrossOver(self, 
+    def firstCrossOver(self, 
                       solution1: PMSPSolution, 
                       solution2: PMSPSolution):
-        newSolution = [[] for x in range(solution1.m)] 
-        jobs = [x for x in range(solution1.n)]
+        restrictions = self.restrictions
+        m = self.restrictions.m
+        n = self.restrictions.n
+        newSolution = [[] for x in range(m)] 
+        jobs = [x for x in range(n)]
 
-        for i in range(solution1.m): #pra cada máquina
+        for i in range(m): #pra cada máquina
             if solution1.c[i] < solution2.c[i]: #poem a linha do pai com menor makespan
                 for j in solution1.order_of_tasks[i]:
                     if j not in sum(newSolution, []):
@@ -63,9 +86,18 @@ class Operators:
                     if j not in sum(newSolution, []):
                         newSolution[i].append(j)
                         jobs.pop(jobs.index(j))
-
-        while len(jobs) != 0:
-            newSolution[random.randint(0, solution1.m-1)].append(jobs.pop())
+    
+        sol = PMSPSolution(m,n,restrictions, newSolution)
+        while len(jobs) != 0: #poem os jobs restantes nas máquinas com menor makespan (tentar não piorar uma solução)
+            minMachine= 0
+            minValue  = restrictions.evaluate_machine(sol,0)
+            for i in range(1,m-1):
+                newValue = restrictions.evaluate_machine(sol,i)
+                if newValue < minValue:
+                    minValue = newValue
+                    minMachine = i
+            newJob = jobs.pop()
+            newSolution[minMachine].append(newJob)
        
         sol = PMSPSolution.create_instance(solution1.restrictions, newSolution)
         return sol

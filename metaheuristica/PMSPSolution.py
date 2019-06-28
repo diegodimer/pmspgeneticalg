@@ -8,13 +8,14 @@ class PMSPSolution:
     def __init__(self,
                  m : int,
                  n : int,
-                 restrictions : PMSPRestrictions):
+                 restrictions : PMSPRestrictions,
+                 order_of_tasks : list = None):
         self.m = m
         self.n = n
         self.restrictions = restrictions
         self.c = [0] * m
-        self.fitness = -1       
- 
+        self.fitness = -1  
+        self.order_of_tasks = order_of_tasks
 
     @staticmethod
     def random_instance(restrictions : PMSPRestrictions):

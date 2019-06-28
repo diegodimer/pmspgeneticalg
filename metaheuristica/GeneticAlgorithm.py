@@ -18,7 +18,7 @@ class GeneticAlgorithm:
         self.previousBestsSize = 5
         self.onePointMutationSize = 5
         self.allPointsMutationSize = 5
-        self.meanCrossOversize = 5
+        self.meanCrossOversize = 0
         self.mediumPointCrossOverSize = 5
           
         self.populationSize =   self.previousBestsSize + self.onePointMutationSize + \
@@ -62,8 +62,8 @@ class GeneticAlgorithm:
       
       newPopulation=[];
       # Calculating each new generation
-      for i in range(maxIterations):
-        print("Generation " + str(i))
+      for j in range(maxIterations):
+        print("Generation " + str(j))
         offset = 0
         for i in range(self.previousBestsSize):
           # Copies from previous population
@@ -96,11 +96,10 @@ class GeneticAlgorithm:
           # mediumPointCrossOver()
           solution1 = self.population[random.randint(0, limit)]
           solution2 = random.choice(self.population)
-          newPopulation.append(self.operators.mediumPointCrossOver(solution1, solution2))
+          newPopulation.append(self.operators.firstCrossOver(solution1, solution2))
 
       
         self.population = GeneticAlgorithm.orderPopulationByFitness(newPopulation)
-        print('gen ', i, ' best fitness: ', self.population[0].fitness)
-      
-      print(self.population[0])
+        print('gen ', j, ' best fitness: ', self.population[0].fitness)
+ 
       return self.population[0]
