@@ -82,8 +82,9 @@ def main():
     G2 = ler_instancia("20on4Rp50Rs50_1original.dat")
 
     restrictions = PMSPRestrictions(len(G2[0][0]),len(G2[0]), G2)
-    ga = GeneticAlgorithm.GeneticAlgorithm(restrictions,20)
-    pop = ga.run(24)
+    ga = GeneticAlgorithm.GeneticAlgorithm(restrictions,1000)
+    
+    pop = ga.run(1000)
 
     
 if __name__ == '__main__':

@@ -3,7 +3,7 @@ import math
 from PMSPRestrictions import PMSPRestrictions
 from PMSPSolution import PMSPSolution
 from Operators import Operators
-
+import copy
 
 class GeneticAlgorithm:
     def __init__(self, 
@@ -18,13 +18,13 @@ class GeneticAlgorithm:
         self.populationSize =   populationSize
         
         # Number of solutions generated per operator
-        self.previousBestsSize = int(populationSize*0.1) # 10%
+        self.previousBestsSize = int(populationSize*0.03) # 3%
         self.onePointMutationSize = int(populationSize*0.12)# 12%
         self.allPointsMutationSize = int(populationSize*0.12) # 12%
-        self.firstCrossOverSize = int(populationSize*0.20) # 20%
-        self.secondCrossOverSize = int(populationSize*0.20) # 20%
-        self.thirdCrossOverSize = int(populationSize*0.20)# 20%
-        self.randomSize = int(populationSize*0.06) # 6%
+        self.firstCrossOverSize = int(populationSize*0.10) # 10%
+        self.secondCrossOverSize = int(populationSize*0.25) # 25%
+        self.thirdCrossOverSize = int(populationSize*0.25)# 25%
+        self.randomSize = int(populationSize*0.13) # 6%
                   
         self.population = []
         # pra acessar o fitness de cada indivíduo: population[i].fitness
@@ -53,16 +53,13 @@ class GeneticAlgorithm:
      
       top40 = int(self.populationSize * 0.4)
       top10 = int(self.populationSize * 0.1)
-      
       op = Operators(self.restrictions)
       # Calculating each new generation
+      newPopulation = []
       for j in range(maxIterations):
-        
-        newPopulation=[]
-
+        newPopulation.clear()
         for i in range(self.previousBestsSize):
-            newPopulation.append(self.population[i])
-#            print('passando pra prox ', self.population[i].fitness)
+            newPopulation.append(copy.deepcopy(self.population[i]))
         
         for i in range(self.onePointMutationSize):
             target = random.choice(self.population[0:top10]) #seleciona 1 entre os top 10 pra mutar
@@ -97,9 +94,8 @@ class GeneticAlgorithm:
             newPopulation.append(newInd)
     
         newPopulation.sort(key=lambda x: x.fitness, reverse=False)
-        self.population = newPopulation
+        self.population = newPopulation.copy()
         print('gen ', j, ' best fitness: ', newPopulation[0].fitness)
-#        for i in self.population:
-#            print(i.fitness)
+
 
       return self.population[0]
