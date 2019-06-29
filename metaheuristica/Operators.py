@@ -218,7 +218,7 @@ class Operators:
     def path_relinking(self, guiding: PMSPSolution, initiating: PMSPSolution):
         solutions = []
         middle_solution = copy.deepcopy(initiating)
-        best_solution = np.copy(middle_solution.order_of_tasks)
+        best_solution = np.asarray(np.copy(middle_solution.order_of_tasks))
         best_fitness = initiating.fitness
 
         # For each task in the guiding solution
@@ -271,7 +271,7 @@ class Operators:
 
                 # Updating best solution
                 if middle_solution.fitness < best_fitness:
-                    np.copyto(best_solution, middle_solution.order_of_tasks)
+                    best_solution = np.asarray(copy.deepcopy(middle_solution.order_of_tasks))
                     best_fitness = middle_solution.fitness
 
         return PMSPSolution.create_instance(self.restrictions, best_solution.tolist())
