@@ -1,0 +1,5 @@
+for file in *.dat
+do
+  python3 converte_instacia.py "$file" "${file%.dat}"
+  glpsol --tmlim 3600 -m formulacao_PMSP.mod -d "${file%.dat}" -o "${file%.dat}".sol | tee -a "${file%.dat}LOG".sol 
+done
