@@ -1,10 +1,7 @@
-import random
-import numpy as np
-import math
-from PMSPSolution import PMSPSolution
+import sys
 from PMSPRestrictions import PMSPRestrictions
-from Operators import Operators
 import GeneticAlgorithm
+
 
 def ler_instancia(nome):
         f = open(nome,"r")
@@ -13,7 +10,7 @@ def ler_instancia(nome):
 #                print(contents[1])
 #                print(contents[2])
 #                print(contents[4])
-                linha = contents[4].split(" ")
+#                linha = contents[4].split(" ")
         f.close()
         G = []
 		
@@ -52,39 +49,21 @@ def ler_instancia(nome):
         return G
 
 def main():
-    random.seed()
-    '''
-     VAI LER DO ARQUIVO:
-     id
-     numero de máquinas
-     numero de jobs
-     
-     P_1_1 P_1_2 ... P_1_m : processamento do job 1 nas máquinas de 1 até m
-     P_2_1 P_2_2 ... P_2_m : processamento do job 2 nas máquinas de 1 até m
-     ...
-     P_N_1 P_N_2... P_N_M  : processamento do job n nas máquinas de 1 até m
-    
-     M matrizes com tempo de setup (uma matriz pra cada máquina)
-    
-     S_1_1_1  S_1_2_1 ... S_1_N_1
-    ...
-     S_N_1_1 S_N_2_1 ... S_N_N_1
-    
-     ...
-     
-     S_1_1_M S_1_2_M ... S_1_N_M
-     ...
-     S_N_1_M S_N_2_M ... S_N_N_M
-    '''
-
-
-    
-    G2 = ler_instancia("20on4Rp50Rs50_1original.dat")
-
-    restrictions = PMSPRestrictions(len(G2[0][0]),len(G2[0]), G2)
-    ga = GeneticAlgorithm.GeneticAlgorithm(restrictions,1000)
-    
-    pop = ga.run(1000)
+    try:
+        G2 = ler_instancia(sys.argv[1])
+        populationSize = int(sys.argv[2])
+        maxIter = int(sys.argv[3])
+        try:
+            seed = int(sys.argv[4])
+        except:
+                seed = None
+        restrictions = PMSPRestrictions(len(G2[0][0]),len(G2[0]), G2)
+        ga = GeneticAlgorithm.GeneticAlgorithm(restrictions,populationSize,seed)
+        pop = ga.run(maxIter)
+        print("Best: ", pop.fitness, 'Solution: ', pop.order_of_tasks)
+    except:
+        print('Sintaxe invalida: python3 PMSPMain.py <arquivo de instancia> <tamanho da populacao> <max iteracoes> <seed/opcional>')
+      
 
     
 if __name__ == '__main__':
